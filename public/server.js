@@ -17,7 +17,7 @@ app.use((req, res, next) => {
 
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname + '/map.html'));
+  res.sendFile(path.join(__dirname + '/index.html'));
 });
 
 // Add a new checkpoint to the database
