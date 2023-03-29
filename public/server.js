@@ -6,18 +6,19 @@ const { pathToFileURL } = require('url');
 const app = express();
 const port = 3000;
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname));
 app.use(express.json());
 
+/*
 app.use((req, res, next) => {
   const mimeType = mime.lookup(pathToFileURL);
   res.setHeader('Content-Type', mimeType);
   next();
 });
-
+*/
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname + '/index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Add a new checkpoint to the database
