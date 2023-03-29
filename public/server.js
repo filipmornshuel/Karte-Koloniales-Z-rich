@@ -22,12 +22,13 @@ app.use(session({
   }
 }));
 
+/*
 app.use((req, res, next) => {
   const mimeType = mime.lookup(pathToFileURL);
   res.setHeader('Content-Type', mimeType);
   next();
 });
-
+*/
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + 'index.html'));
