@@ -9,14 +9,6 @@ const port = 3000;
 app.use(express.static(__dirname));
 app.use(express.json());
 
-/*
-app.use((req, res, next) => {
-  const mimeType = mime.lookup(pathToFileURL);
-  res.setHeader('Content-Type', mimeType);
-  next();
-});
-*/
-
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -43,6 +35,36 @@ app.post('/api/checkpoints', (req, res) => {
           lng,
           description,
           img
+        };
+        res.json(newCheckpoint);
+      }
+    }
+  );
+});
+
+// Add a new checkpoint to the database
+app.post('/api/requestCheckpoints', (req, res) => {
+  const { name, lat, lng, description, img, audio } = req.body;
+
+  // Insert new checkpoint into the 'checkpoints' table
+  db.run(
+    `INSERT INTO requestCheckpoints (name, lat, lng, description, img, audio)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+    [name, lat, lng, description, img, audio],
+    function (err) {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error.');
+      } else {
+        // Return the new checkpoint with its ID
+        const newCheckpoint = {
+          id: this.lastID,
+          name,
+          lat,
+          lng,
+          description,
+          img,
+          audio
         };
         res.json(newCheckpoint);
       }

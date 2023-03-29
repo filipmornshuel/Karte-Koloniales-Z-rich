@@ -45,6 +45,7 @@ var vectorLayer = new ol.layer.Vector({
   },
 });
 
+//Die Map laden
 var map = new ol.Map({
   target: 'map',
   layers: [
@@ -59,6 +60,7 @@ var map = new ol.Map({
   }),
 });
 
+//Für den Mode wechsel zuständig
 function switchMode() {
   var modeButton = document.getElementById('modeButton');
   if (addCheckpointMode) {
@@ -69,7 +71,7 @@ function switchMode() {
     modeButton.innerHTML = 'Switch to Exploration Mode';
   }
 }
-
+/*
 function saveCheckpointData() {
   name = document.getElementById('nameMorn').value;
   description = document.getElementById('description').value;
@@ -77,6 +79,20 @@ function saveCheckpointData() {
   blobAudio = document.getElementById('audio').value;
   console.log(name, description, blobImg, blobAudio);
   addCheckpoint(coordinate, name, description, blobImg);
+  document.getElementById('nameMorn').value = '';
+  document.getElementById('description').value = '';
+  document.getElementById('img').value = '';
+  document.getElementById('audio').value = '';
+  closeForm();
+}*/
+
+function saveRequestCheckpointData() {
+  name = document.getElementById('nameMorn').value;
+  description = document.getElementById('description').value;
+  blobImg = document.getElementById('img').value;
+  blobAudio = document.getElementById('audio').value;
+  console.log(name, description, blobImg, blobAudio);
+  addRequestCheckpoint(coordinate, name, description, blobImg, blobAudio);
   document.getElementById('nameMorn').value = '';
   document.getElementById('description').value = '';
   document.getElementById('img').value = '';
@@ -92,7 +108,7 @@ function addCheckpoint(coordinate, name, description, blobImg) {
       geometry: new ol.geom.Point(coordinate),
       name: name,
       description: description,
-      img: blobImg,
+      img: blobImg
     });
     vectorSource.addFeature(checkpoint);
 
@@ -114,12 +130,51 @@ function addCheckpoint(coordinate, name, description, blobImg) {
         lng: coordinate[0],
         lat: coordinate[1],
         description: description,
-        img: blobImg,
+        img: blobImg
       })
     );
   }
 }
 
+function addRequestCheckpoint(coordinate, name, description, blobImg, blobAudio) {
+  console.log(coordinate, name, description, blobImg, blobAudio);
+  addCheckpointMode = false;
+  if (name != null && name != '') {
+    var checkpoint = new ol.Feature({
+      geometry: new ol.geom.Point(coordinate),
+      name: name,
+      description: description,
+      img: blobImg,
+      audio: blobAudio
+    });
+    vectorSource.addFeature(checkpoint);
+
+    // send checkpoint data to server
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/requestCheckpoints');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        console.log('Checkpoint saved to database');
+      } else {
+        console.log('Error saving checkpoint to database');
+      }
+    };
+    xhr.send(
+      JSON.stringify({
+        name: name,
+        lng: coordinate[0],
+        lat: coordinate[1],
+        description: description,
+        img: blobImg,
+        audio: blobAudio
+      })
+    );
+  }
+}
+
+/*
 // Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,
 // dass man denn Checkpoint noch variabel verschieben kann, bevor man den Vorschlag gemacht hat.
 function fakeAddCheckpoint(coordinate, name) {
@@ -130,11 +185,11 @@ function fakeAddCheckpoint(coordinate, name) {
       geometry: new ol.geom.Point(coordinate),
       name: name,
       description: description,
-      img: blobImg,
+      img: blobImg
     });
     vectorSource.addFeature(checkpoint);
   }
-}
+}*/
 
 map.on('click', function (evt) {
   if (addCheckpointMode) {
@@ -245,38 +300,5 @@ xhr.onload = function () {
   }
 };
 xhr.send();
-/*
-    xhr.open('GET', 'api/allCheckpoints', true);
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        
 
-        for (let i = 0; i < checkpoints.length; i++) {
-          const info = infos[i];
-          const entry = {
-            name: info.name,
-            description: info.description,
-            img: info.img,
-            audio: info.audio
-          };
-          console.log(infos);
-          const trd = entriesTable.insertRow();
-          let nameCell = trd.insertCell(0);
-          let descCell = trd.insertCell(1);
-          let imgCell = trd.insertCell(2);
-          let audioCell = trd.insertCell(3);
 
-          nameCell.innerHTML = entry.name;
-          descCell.innerHTML = entry.description;
-          imgCell.innerHTML = entry.img;
-          audioCell.innerHTML = entry.audio;
-          
-        }
-        entries.appendChild(entriesTable)
-      }
-      else {
-        console.log("No checkpoints have been created.")
-      }
-    }
-    xhr.send();
-    */

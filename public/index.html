@@ -22,7 +22,6 @@
   <h1>Open Layers Map API</h1>
   <div id="map"></div>
   <div id="addMode">
-    <button id="modeButton" onclick="switchMode()">Add Checkpoint Mode</button>
     <button class="open-button" onclick="openForm()">Add Station</button>
   </div>
 
@@ -42,7 +41,7 @@
       <label for="audio">Audio:</label>
       <input type="file" id="audio">
 
-      <button type="button" class="btn" id="send" onclick="saveCheckpointData()">Send</button>
+      <button type="button" class="btn" id="send" onclick="saveRequestCheckpointData()">Send</button>
       <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
     </form>
   </div>
@@ -52,5 +51,25 @@
     <label for="" id="labelimg"></label>
     <label for="" id="labelaudio"></label>
   </div>
+
+
+  <footer class="footer">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link 1</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link 2</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link 3</a>
+        </li>
+      </ul>
+      <span class="navbar-text">
+        © 2023 - NO rights reserved
+      </span>
+    </nav>
+  </footer>
 </body>
 </html>
