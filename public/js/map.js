@@ -65,6 +65,7 @@ let map = new ol.Map({
   }),
 });
 
+//Für den Mode wechsel zuständig
 function switchMode() {
   let modeButton = document.getElementById('modeButton');
   if (addCheckpointMode) {
@@ -75,7 +76,7 @@ function switchMode() {
     modeButton.innerHTML = 'Switch to Exploration Mode';
   }
 }
-
+/*
 function saveCheckpointData() {
   title = document.getElementById('titleMorn').value;
   description = document.getElementById('description').value;
@@ -198,11 +199,13 @@ function addHistoryEntry(coordinate, title, description, blobImg) {
         lat: coordinate[1],
         description: description,
         img: blobImg,
+        audio: blobAudio
       })
     );
   }
 }
 
+/*
 // Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,
 // dass man denn Checkpoint noch letiabel verschieben kann, bevor man den Vorschlag gemacht hat.
 function fakeAddCheckpoint(coordinate, title) {
@@ -224,7 +227,7 @@ function fakeAddCheckpoint(coordinate, title) {
     vectorSource.addFeature(checkpoint);
     currentCheckpoint = checkpoint;
   }
-}
+}*/
 
 map.on('click', function (evt) {
   if (addCheckpointMode) {
