@@ -73,6 +73,19 @@ app.get('/api/allCheckpoints', (req, res) => {
   });
 });
 
+//Load proposed Stations
+app.get('/api/loadRequests', (req, res) => {
+  db.all('SELECT * FROM requestCheckpoints', (err, rows) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Server error');
+    } else {
+      console.log(rows);
+      res.send(rows);
+    }
+  })
+})
+
 const db = new sqlite3.Database('db/checkpoints.db', (err) => {
   if (err) {
     console.error(err.message);
