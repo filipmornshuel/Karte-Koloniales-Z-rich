@@ -71,7 +71,7 @@ function switchMode() {
     modeButton.innerHTML = 'Switch to Exploration Mode';
   }
 }
-/*
+
 function saveCheckpointData() {
   name = document.getElementById('nameMorn').value;
   description = document.getElementById('description').value;
@@ -84,8 +84,8 @@ function saveCheckpointData() {
   document.getElementById('img').value = '';
   document.getElementById('audio').value = '';
   closeForm();
-}*/
-
+}
+/*
 function saveRequestCheckpointData() {
   name = document.getElementById('nameMorn').value;
   description = document.getElementById('description').value;
@@ -98,7 +98,7 @@ function saveRequestCheckpointData() {
   document.getElementById('img').value = '';
   document.getElementById('audio').value = '';
   closeForm();
-}
+}*/
 
 function addCheckpoint(coordinate, name, description, blobImg) {
   console.log(coordinate, name, description, blobImg);
@@ -135,7 +135,7 @@ function addCheckpoint(coordinate, name, description, blobImg) {
     );
   }
 }
-
+/*
 function addRequestCheckpoint(coordinate, name, description, blobImg, blobAudio) {
   console.log(coordinate, name, description, blobImg, blobAudio);
   addCheckpointMode = false;
@@ -152,7 +152,7 @@ function addRequestCheckpoint(coordinate, name, description, blobImg, blobAudio)
     // send checkpoint data to server
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/requestCheckpoints');
+    xhr.open('POST', '/api/checkpoints');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function () {
       if (xhr.status === 200) {
@@ -172,7 +172,7 @@ function addRequestCheckpoint(coordinate, name, description, blobImg, blobAudio)
       })
     );
   }
-}
+}*/
 
 /*
 // Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,
