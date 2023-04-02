@@ -76,7 +76,7 @@ function switchMode() {
     modeButton.innerHTML = 'Switch to Exploration Mode';
   }
 }
-/*
+
 function saveCheckpointData() {
   title = document.getElementById('titleMorn').value;
   description = document.getElementById('description').value;
@@ -203,7 +203,7 @@ function addHistoryEntry(coordinate, title, description, blobImg) {
       })
     );
   }
-}
+}*/
 
 /*
 // Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,

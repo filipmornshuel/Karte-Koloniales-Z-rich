@@ -2,8 +2,9 @@ const sqlite3 = require('sqlite3').verbose();
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const mime = require('mime-types');
-const { pathToFileURL } = require('url');
+const multer = require('multer');
+//const storage
+//const upload = multer({sotrage: })
 const app = express();
 const port = 3000;
 const nodemailer = require('nodemailer');
