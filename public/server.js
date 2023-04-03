@@ -49,6 +49,34 @@ app.post('/api/checkpoints', (req, res) => {
   );
 });
 
+app.post('/api/sendProposal', (req, res) => {
+  const { name, lat, lng, description, img } = req.body;
+
+  // Insert new checkpoint into the 'readCheckpoints' table
+  db.run(
+    `INSERT INTO requestCheckpoints (name, lat, lng, description, img)
+          VALUES (?, ?, ?, ?, ?)`,
+    [name, lat, lng, description, img],
+    function (err) {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error.');
+      } else {
+        // Return the new checkpoint with its ID
+        const newCheckpoint = {
+          id: this.lastID,
+          name,
+          lat,
+          lng,
+          description,
+          img
+        };
+        res.json(newCheckpoint);
+      }
+    }
+  );
+});
+
 app.get('/api/checkpoints', (req, res) => {
   db.all('SELECT * FROM checkpoints', (err, rows) => {
     if (err) {
