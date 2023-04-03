@@ -7,11 +7,13 @@ var blobAudio;
 const btn = document.getElementById('send');
 function openForm() {
   document.getElementById('myForm').style.display = 'block';
+  document.getElementsByClassName('open-button')[0].style.display = 'none';
   addCheckpointMode = true;
 }
 
 function closeForm() {
   document.getElementById('myForm').style.display = 'none';
+  document.getElementsByClassName('open-button')[0].style.display = 'inline-block';
 }
 var vectorSource = new ol.source.Vector();
 
@@ -88,18 +90,11 @@ function addCheckpoint(coordinate, name, description, blobImg) {
   console.log(coordinate, name, description, blobImg);
   addCheckpointMode = false;
   if (name != null && name != '') {
-    var checkpoint = new ol.Feature({
-      geometry: new ol.geom.Point(coordinate),
-      name: name,
-      description: description,
-      img: blobImg,
-    });
-    vectorSource.addFeature(checkpoint);
 
     // send checkpoint data to server
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/checkpoints');
+    xhr.open('POST', '/api/sendProposal');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function () {
       if (xhr.status === 200) {
@@ -146,7 +141,7 @@ map.on('click', function (evt) {
   }
 });
 
-var checkpoints = [
+var checkpoints = [/*
   new ol.Feature({
     geometry: new ol.geom.Point(ol.proj.fromLonLat([8.5448, 47.3769])),
     name: 'Checkpoint 1',
@@ -162,7 +157,7 @@ var checkpoints = [
   new ol.Feature({
     geometry: new ol.geom.Point(ol.proj.fromLonLat([8.5188, 47.3613])),
     name: 'Checkpoint 4',
-  }),
+  }),*/
 ];
 
 vectorSource.addFeatures(checkpoints);
