@@ -44,12 +44,12 @@ let vectorLayer = new ol.layer.Vector({
       scale: 0.1,
     });
 
-    return new ol.style.Style({
-      text: textStyle,
-      image: iconStyle,
-    });
-  },
-});
+      return new ol.style.Style({
+        text: textStyle,
+        image: iconStyle,
+      });
+    },
+  });
 
 let map = new ol.Map({
   target: 'map',
@@ -199,11 +199,10 @@ function addHistoryEntry(coordinate, title, description, blobImg) {
         lat: coordinate[1],
         description: description,
         img: blobImg,
-        audio: blobAudio
       })
     );
   }
-}*/
+}
 
 /*
 // Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,
@@ -329,6 +328,7 @@ map.on('singleclick', function (evt) {
         }
       };
     }
+ 
   }
 });
 
