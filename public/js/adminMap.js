@@ -103,11 +103,40 @@ xhr.onload = function () {
       accept.addEventListener('click', () => {
         addCheckpoint([checkpoint.lng, checkpoint.lat], entry.name, entry.description, entry.img);
       });
+
       let decline = document.createElement('button');
       decline.innerHTML = 'Ablehnen';
+
+      let edit = document.createElement('button');
+      edit.innerHTML = '...';
+
+      let save = document.createElement('button');
+      save.innerHTML = 'Speichern';
+      save.setAttribute('hidden', 'ture');
+
+      edit.addEventListener('click', () => {
+        accept.setAttribute('hidden', 'true');
+        decline.setAttribute('hidden', 'ture');
+        save.removeAttribute('hidden');
+        edit.setAttribute('hidden', 'true');
+        nameCell.setAttribute('contenteditable', 'true');
+        descCell.setAttribute('contenteditable', 'true');
+      });
+
+      save.addEventListener('click', () => {
+        accept.removeAttribute('hidden');
+        decline.removeAttribute('hidden');
+        edit.removeAttribute('hidden');
+        save.setAttribute('hidden', true);
+        nameCell.setAttribute('contenteditable', 'false');
+        descCell.setAttribute('contenteditable', 'false');
+        updateCheckpoint(checkpoint.id, [checkpoint.lng, checkpoint.lat], nameCell.innerHTML, descCell.innerHTML, entry.img);
+      });
+
       buttonCell.appendChild(accept);
       buttonCell.appendChild(decline);
-
+      buttonCell.appendChild(edit);
+      buttonCell.appendChild(save);
 
       // Ein neues ol.Feature-Objekt erstellen
       const feature = new ol.Feature({
@@ -117,6 +146,7 @@ xhr.onload = function () {
       // Füge das Feature zum Vektorlayer hinzu
       vectorSource.addFeature(feature);
     }
+
     entries.appendChild(entriesTable);
   } else {
     console.log('no data has been found.');
@@ -153,6 +183,33 @@ function addCheckpoint(coordinate, name, description, blobImg) {
     };
     xhr.send(
       JSON.stringify({
+        name: name,
+        lng: coordinate[0],
+        lat: coordinate[1],
+        description: description,
+        img: blobImg,
+      })
+    );
+  }
+}
+
+function updateCheckpoint(id, coordinate, name, description, blobImg) {
+
+  if (name != null && name != '') {
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', '/api/updateCheckpoints');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        console.log('Checkpoint updated');
+      } else {
+        console.log('Error updating checkpoint');
+      }
+    };
+    xhr.send(
+      JSON.stringify({
+        id: id,
         name: name,
         lng: coordinate[0],
         lat: coordinate[1],

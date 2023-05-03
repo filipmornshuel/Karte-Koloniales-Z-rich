@@ -77,6 +77,31 @@ app.post('/api/sendProposal', (req, res) => {
   );
 });
 
+app.put('/api/updatecheckpoints', (req, res) => {
+  const { id, name, lat, lng, description, img } = req.body;
+
+  db.run(
+    `UPDATE requestCheckpoints SET name=?, description=? WHERE id=? `,
+    [name, description, id],
+    function (err) {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error.');
+      } else {
+        // Return the new checkpoint with its ID
+        const update = {
+          name,
+          lat,
+          lng,
+          description,
+          img
+        };
+        res.json(update);
+      }
+    }
+  );
+});
+
 app.get('/api/checkpoints', (req, res) => {
   db.all('SELECT * FROM checkpoints', (err, rows) => {
     if (err) {
