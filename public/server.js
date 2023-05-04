@@ -49,6 +49,7 @@ app.post('/api/checkpoints', (req, res) => {
   );
 });
 
+//Send Station Request
 app.post('/api/sendProposal', (req, res) => {
   const { name, lat, lng, description, img } = req.body;
 
@@ -77,6 +78,7 @@ app.post('/api/sendProposal', (req, res) => {
   );
 });
 
+//Update requested Station
 app.put('/api/updatecheckpoints', (req, res) => {
   const { id, name, lat, lng, description, img } = req.body;
 
@@ -88,7 +90,6 @@ app.put('/api/updatecheckpoints', (req, res) => {
         console.error(err.message);
         res.status(500).send('Internal server error.');
       } else {
-        // Return the new checkpoint with its ID
         const update = {
           name,
           lat,
@@ -114,6 +115,7 @@ app.get('/api/checkpoints', (req, res) => {
   });
 });
 
+//Load all Stations
 app.get('/api/allCheckpoints', (req, res) => {
   db.all('SELECT id,name,description,img,audio FROM checkpoints', (err, rows) => {
     if (err) {
@@ -137,6 +139,24 @@ app.get('/api/loadRequests', (req, res) => {
       res.send(rows);
     }
   })
+})
+
+//Delete requested Station after approval/decline
+app.delete('/api/removeRequest', (req, res) => {
+  const id = req.body.id;
+
+  db.run(
+    'DELETE FROM requestCheckpoints WHERE id=?',
+    [id],
+    function (err) {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error.');
+      } else {
+        res.status(200).send('Request deleted')
+      }
+    }
+  )
 })
 
 const db = new sqlite3.Database('db/checkpoints.db', (err) => {
