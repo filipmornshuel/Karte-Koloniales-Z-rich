@@ -102,13 +102,20 @@ xhr.onload = function () {
 
       accept.addEventListener('click', () => {
         addCheckpoint([checkpoint.lng, checkpoint.lat], entry.name, entry.description, entry.img);
+        removeRequest(checkpoint.id);
+        window.location.reload();
       });
 
       let decline = document.createElement('button');
       decline.innerHTML = 'Ablehnen';
 
+      decline.addEventListener('click', () => {
+        removeRequest(checkpoint.id);
+        window.location.reload();
+      })
+
       let edit = document.createElement('button');
-      edit.innerHTML = '...';
+      edit.innerHTML = 'Bearbeiten';
 
       let save = document.createElement('button');
       save.innerHTML = 'Speichern';
@@ -131,6 +138,7 @@ xhr.onload = function () {
         nameCell.setAttribute('contenteditable', 'false');
         descCell.setAttribute('contenteditable', 'false');
         updateCheckpoint(checkpoint.id, [checkpoint.lng, checkpoint.lat], nameCell.innerHTML, descCell.innerHTML, entry.img);
+        window.location.reload();
       });
 
       buttonCell.appendChild(accept);
@@ -217,5 +225,25 @@ function updateCheckpoint(id, coordinate, name, description, blobImg) {
         img: blobImg,
       })
     );
+  }
+}
+
+function removeRequest(id) {
+
+  if (id != null && id != '') {
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('DELETE', '/api/removeRequest');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        console.log('Checkpoint deleted');
+      } else {
+        console.log('No affected rows');
+      }
+    }
+    xhr.send(
+      JSON.stringify({id: id})
+    )
   }
 }
