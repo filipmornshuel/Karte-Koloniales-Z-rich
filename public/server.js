@@ -62,7 +62,7 @@ app.post('/api/checkpoint/create', (req, res) => {
 });
 
 // Add a new checkpoint to the database
-app.post('/api/requestCheckpoint/create', verifyHCaptcha, (req, res) => {
+app.post('/api/requestCheckpoint/create', (req, res) => {
   const { title, lat, lng, description, img, audio } = req.body;
 
   // Insert new checkpoint into the 'requestCheckpoints' table

@@ -6,6 +6,7 @@ let blobImg;
 let blobAudio;
 let vectorSource = new ol.source.Vector();
 let checkpoints = [];
+let currentCheckpoint;
 const btn = document.getElementById('send');
 const addStatBtn = document.getElementById('open-button');
 
@@ -173,29 +174,61 @@ function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
   }
 }
 
-/*
+
 // Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,
 // dass man denn Checkpoint noch variabel verschieben kann, bevor man den Vorschlag gemacht hat.
-function fakeAddCheckpoint(coordinate, name) {
-  console.log(coordinate, name, description, blobImg);
+
+function fakeAddCheckpoint(coordinate, title) {
+  console.log(coordinate, title, description, blobImg);
   addCheckpointMode = false;
-  if (name != null && name != '') {
+  if (title != null && title != '') {
+    // Remove previous checkpoint if it exists
+    if (currentCheckpoint) {
+      vectorSource.removeFeature(currentCheckpoint);
+    }
+    // Create new checkpoint
     let checkpoint = new ol.Feature({
       geometry: new ol.geom.Point(coordinate),
-      name: name,
+      title: title,
       description: description,
       img: blobImg
     });
+    // Add new checkpoint to the vector source and store it in the currentCheckpoint variable
     vectorSource.addFeature(checkpoint);
+    currentCheckpoint = checkpoint;
+  }
+}
+/*
+// Add a temporary geometry to the current checkpoint to show its position before it is saved
+function addTemporaryGeometry(coordinate) {
+  if (currentCheckpoint) {
+    let cross = new ol.Feature({
+      geometry: new ol.geom.MultiPoint([coordinate]),
+      name: 'tempCross',
+      style: new ol.style.Style({
+        image: new ol.style.RegularShape({
+          fill: new ol.style.Fill({color: 'red'}),
+          stroke: new ol.style.Stroke({color: 'white', width: 1}),
+          points: 4,
+          radius: 10,
+          angle: Math.PI / 4
+        })
+      })
+    });
+    vectorSource.addFeature(cross);
+    currentCheckpoint.set('tempGeometry', cross.getGeometry());
   }
 }*/
+
 
 map.on('click', function (evt) {
   if (addCheckpointMode) {
     coordinate = evt.coordinate;
     document.getElementById('cords').value = coordinate;
-    //fakeAddCheckpoint(coordinate,name);
-  }
+    fakeAddCheckpoint(coordinate, title);
+    //addTemporaryGeometry(coordinate);
+    //fakeAddCheckpoint(coordinate, title)
+  } 
 });
 
 vectorSource.addFeatures(checkpoints);
@@ -272,11 +305,9 @@ map.on('singleclick', function (evt) {
       span.onclick = function () {
         let modal = document.getElementById('myModal');
         modal.style.display = 'none';
+        let entriesTable = document.querySelector('#myModal table');
+        entriesTable.parentNode.removeChild(entriesTable);
 
-        descCell.style.display = 'none';
-        imgCell.style.display = 'none';
-        audioCell.style.display = 'none';
-        titleCell.style.display = 'none';
       };
 
       // When the user clicks anywhere outside of the modal, close it
@@ -284,10 +315,9 @@ map.on('singleclick', function (evt) {
         let modal = document.getElementById('myModal');
         if (event.target == modal) {
           modal.style.display = 'none';
-          descCell.style.display = 'none';
-          imgCell.style.display = 'none';
-          audioCell.style.display = 'none';
-          titleCell.style.display = 'none';
+          let entriesTable = document.querySelector('#myModal table');
+          entriesTable.parentNode.removeChild(entriesTable);
+         
         }
       };
     }
@@ -301,8 +331,6 @@ function loadCheckpoints() {
       let entries = document.getElementById('checkpoint-entries');
       let entriesTable = document.createElement('table');
       const trh = entriesTable.insertRow();
-
-      
 
       createTableElement('th', 'Titel', trh);
       createTableElement('th', 'Beschreibung', trh)
@@ -359,6 +387,5 @@ function createTableElement(element, content, trh){
   th.innerHTML = content;
   trh.appendChild(th);
 }
-
 
 loadCheckpoints();
