@@ -3,17 +3,34 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const multer = require('multer');
-//const storage
-//const upload = multer({sotrage: })
+const hcaptcha = require('hcaptcha');
+require('dotenv').config({ path: '../.env' });
+const HCAPTCHA_SECRET_KEY = process.env.SECRET_KEY;
 const app = express();
 const port = 3000;
 const nodemailer = require('nodemailer');
 var dotenv = require('dotenv').config({path: '../.env'});
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
 
+
+function verifyHCaptcha(req, res, next) {
+  const { token } = req.body;
+  hcaptcha
+    .verify(HCAPTCHA_SECRET_KEY, token)
+    .then(() => {
+      next();
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(400).send('hCaptcha verification failed.');
+    });
+}
 app.use(express.static(__dirname));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '25mb' }));
 app.use(session({
   secret: "augh",
   resave: false,
@@ -104,15 +121,19 @@ app.get('/api/getHistory', (req, res) => {
   });
 });
 
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // Add a new checkpoint to the database
-app.post('/api/checkpoints', (req, res) => {
-  const { name, lat, lng, description, img } = req.body;
+app.post('/api/checkpoint/create', (req, res) => {
+  const { title, lat, lng, description, img, audio } = req.body;
 
   // Insert new checkpoint into the 'checkpoints' table
   db.run(
-    `INSERT INTO checkpoints (name, lat, lng, description, img)
-          VALUES (?, ?, ?, ?, ?)`,
-    [name, lat, lng, description, img],
+    `INSERT INTO checkpoints (title, lat, lng, description, img, audio)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+    [title, lat, lng, description, img, audio],
     function (err) {
       if (err) {
         console.error(err.message);
@@ -121,11 +142,12 @@ app.post('/api/checkpoints', (req, res) => {
         // Return the new checkpoint with its ID
         const newCheckpoint = {
           id: this.lastID,
-          name,
+          title,
           lat,
           lng,
           description,
-          img
+          img,
+          audio,
         };
         res.json(newCheckpoint);
       }
@@ -181,7 +203,7 @@ app.post('/api/addHistory', (req, res) => {
         // Return the new checkpoint with its ID
         const newCheckpoint = {
           id: this.lastID,
-          name,
+          title,
           lat,
           lng,
           description,
@@ -230,15 +252,63 @@ app.get('/api/checkpoints', (req, res) => {
   });
 });
 
-//Load all Stations
-app.get('/api/allCheckpoints', (req, res) => {
-  db.all('SELECT id,title,description,img,audio FROM checkpoints', (err, rows) => {
+app.get('/api/checkpoint', (req, res) => {
+  const title = req.query.title;
+  db.get('SELECT * FROM checkpoints WHERE title = ?', [title], (err, row) => {
     if (err) {
       console.error(err);
       res.status(500).send('Server error');
+    } else if(!row){
+      res.status(404).send('Checkpoint not found');
+    }
+    
+    else {
+      res.send(row);
+    }
+  })
+})
+
+//Delete requested Station after approval/decline
+app.delete('/api/removeRequest', (req, res) => {
+  const id = req.body.id;
+
+  db.run(
+    'DELETE FROM requestCheckpoints WHERE id=?',
+    [id],
+    function (err) {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error.');
+      } else {
+        res.status(200).send('Request deleted')
+      }
+    }
+  )
+})
+
+app.post('/sendEmail', (req, res) => {
+  const { name, email, phone, message } = req.body;
+  console.log(process.env.EMAIL + " " + process.env.PWD)
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PWD,
+    },
+  });
+  const mailOptions = {
+    from: 'ironboy013@gmail.com',
+    to: process.env.EMAIL,
+    subject: "Test",
+    text: message,
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal server error.');
     } else {
-      console.log(rows);
-      res.send(rows);
+      console.log('Email sent: ' + info.response);
+      res.sendStatus(200);
     }
   });
 });
@@ -309,7 +379,7 @@ const db = new sqlite3.Database('db/checkpoints.db', (err) => {
     // Create the 'checkpoints' table if it doesn't exist
     db.run(`CREATE TABLE IF NOT EXISTS checkpoints (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
+      title TEXT NOT NULL,
       lat REAL NOT NULL,
       lng REAL NOT NULL,
       description TEXT

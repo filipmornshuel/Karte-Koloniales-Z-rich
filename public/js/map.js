@@ -39,18 +39,18 @@ let vectorLayer = new ol.layer.Vector({
 
     let iconStyle = new ol.style.Icon({
       anchor: [0.5, 1],
-      //blockiert in firefox wegen CORP
       src: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png',
       scale: 0.1,
     });
 
-      return new ol.style.Style({
-        text: textStyle,
-        image: iconStyle,
-      });
-    },
-  });
+    return new ol.style.Style({
+      text: textStyle,
+      image: iconStyle,
+    });
+  },
+});
 
+//Die Map laden
 let map = new ol.Map({
   target: 'map',
   layers: [
@@ -199,8 +199,28 @@ function addHistoryEntry(coordinate, title, description, blobImg) {
         lat: coordinate[1],
         description: description,
         img: blobImg,
+        audio: blobAudio,
+      }),
+    )
+      .then((response) => {
+        if (response.ok) {
+          console.log('Checkpoint saved to database');
+        } else {
+          console.log('Error saving checkpoint to database');
+        }
       })
-    );
+      .catch((error) => {
+        console.log('Error saving checkpoint to database', error);
+      });
+
+    let checkpoint = new ol.Feature({
+      geometry: new ol.geom.Point(coordinate),
+      title: title,
+      description: description,
+      img: blobImg,
+      audio: blobAudio,
+    });
+    vectorSource.addFeature(checkpoint);
   }
 }
 
@@ -328,7 +348,6 @@ map.on('singleclick', function (evt) {
         }
       };
     }
- 
   }
 });
 
@@ -339,6 +358,8 @@ function loadCheckpoints() {
       let entries = document.getElementById('checkpoint-entries');
       let entriesTable = document.createElement('table');
       const trh = entriesTable.insertRow();
+
+      
 
       createTableElement('th', 'Titel', trh);
       createTableElement('th', 'Beschreibung', trh)
