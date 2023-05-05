@@ -224,9 +224,10 @@ function addHistoryEntry(coordinate, title, description, blobImg) {
   }
 }
 
-/*
+
 // Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,
-// dass man denn Checkpoint noch letiabel verschieben kann, bevor man den Vorschlag gemacht hat.
+// dass man denn Checkpoint noch variabel verschieben kann, bevor man den Vorschlag gemacht hat.
+
 function fakeAddCheckpoint(coordinate, title) {
   console.log(coordinate, title, description, blobImg);
   addCheckpointMode = false;
@@ -246,7 +247,29 @@ function fakeAddCheckpoint(coordinate, title) {
     vectorSource.addFeature(checkpoint);
     currentCheckpoint = checkpoint;
   }
+}
+/*
+// Add a temporary geometry to the current checkpoint to show its position before it is saved
+function addTemporaryGeometry(coordinate) {
+  if (currentCheckpoint) {
+    let cross = new ol.Feature({
+      geometry: new ol.geom.MultiPoint([coordinate]),
+      name: 'tempCross',
+      style: new ol.style.Style({
+        image: new ol.style.RegularShape({
+          fill: new ol.style.Fill({color: 'red'}),
+          stroke: new ol.style.Stroke({color: 'white', width: 1}),
+          points: 4,
+          radius: 10,
+          angle: Math.PI / 4
+        })
+      })
+    });
+    vectorSource.addFeature(cross);
+    currentCheckpoint.set('tempGeometry', cross.getGeometry());
+  }
 }*/
+
 
 map.on('click', function (evt) {
   if (addCheckpointMode) {
@@ -358,8 +381,6 @@ function loadCheckpoints() {
       let entries = document.getElementById('checkpoint-entries');
       let entriesTable = document.createElement('table');
       const trh = entriesTable.insertRow();
-
-      
 
       createTableElement('th', 'Titel', trh);
       createTableElement('th', 'Beschreibung', trh)
