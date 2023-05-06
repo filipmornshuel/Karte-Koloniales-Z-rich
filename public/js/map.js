@@ -103,6 +103,12 @@ function saveCheckpointData() {
           imgUrl.toString(),
           audioUrl.toString()
         );
+        addHistoryEntry(
+          coordinate,
+          title,
+          description,
+          imgUrl.toString()
+        );
       });
     });
   } else if (fileImg) {
@@ -113,6 +119,7 @@ function saveCheckpointData() {
     frImg.addEventListener('load', () => {
       let imgUrl = frImg.result;
       addCheckpoint(coordinate, title, description, imgUrl.toString(), '');
+      addHistoryEntry(coordinate, title, description, imgUrl.toString());
     });
   } else if (fileAudio) {
     let frAudio = new FileReader();
@@ -122,6 +129,7 @@ function saveCheckpointData() {
     frAudio.addEventListener('load', () => {
       let audioUrl = frAudio.result;
       addCheckpoint(coordinate, title, description, '', audioUrl.toString());
+      addHistoryEntry(coordinate, title, description, imgUrl.toString());
     });
   }
 }
@@ -185,7 +193,7 @@ function addHistoryEntry(coordinate, title, description, blobImg) {
     };
     xhr.send(
       JSON.stringify({
-        title: title,
+        name: title,
         lng: coordinate[0],
         lat: coordinate[1],
         description: description,
