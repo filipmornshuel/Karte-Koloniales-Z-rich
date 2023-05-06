@@ -5,6 +5,8 @@ const mime = require('mime-types');
 const { pathToFileURL } = require('url');
 const app = express();
 const port = 3000;
+const nodemailer = require('nodemailer');
+var dotenv = require('dotenv').config({path: '../.env'});
 
 app.use(express.static(__dirname));
 app.use(express.json());
@@ -18,6 +20,19 @@ app.use((req, res, next) => {
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + 'index.html'));
+});
+
+//Get all histroy entries
+app.get('/api/getHistory', (req, res) => {
+  db.all('SELECT id,name,description,img,audio FROM history', (err, rows) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    } else {
+      console.log(rows);
+      res.send(rows);
+    }
+  });
 });
 
 // Add a new checkpoint to the database
@@ -51,11 +66,41 @@ app.post('/api/checkpoints', (req, res) => {
 
 //Send Station Request
 app.post('/api/sendProposal', (req, res) => {
-  const { name, lat, lng, description, img } = req.body;
+  const { title, lat, lng, description, img, audio } = req.body;
 
   // Insert new checkpoint into the 'readCheckpoints' table
   db.run(
-    `INSERT INTO requestCheckpoints (name, lat, lng, description, img)
+    `INSERT INTO requestCheckpoints (title, lat, lng, description, img, audio)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+    [title, lat, lng, description, img, audio],
+    function (err) {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error.');
+      } else {
+        // Return the new checkpoint with its ID
+        const newCheckpoint = {
+          id: this.lastID,
+          title,
+          lat,
+          lng,
+          description,
+          img,
+          audio,
+        };
+        res.json(newCheckpoint);
+      }
+    }
+  );
+});
+
+//Add Request to History
+app.post('/api/addHistory', (req, res) => {
+  const { name, lat, lng, description, img } = req.body;
+
+  // Insert new checkpoint into the 'history' table
+  db.run(
+    `INSERT INTO history (name, lat, lng, description, img)
           VALUES (?, ?, ?, ?, ?)`,
     [name, lat, lng, description, img],
     function (err) {
@@ -117,7 +162,7 @@ app.get('/api/checkpoints', (req, res) => {
 
 //Load all Stations
 app.get('/api/allCheckpoints', (req, res) => {
-  db.all('SELECT id,name,description,img,audio FROM checkpoints', (err, rows) => {
+  db.all('SELECT id,title,description,img,audio FROM checkpoints', (err, rows) => {
     if (err) {
       console.error(err);
       res.status(500).send('Server error');
@@ -158,6 +203,33 @@ app.delete('/api/removeRequest', (req, res) => {
     }
   )
 })
+
+app.post('/sendEmail', (req, res) => {
+  const { name, email, phone, message } = req.body;
+  console.log(process.env.EMAIL + " " + process.env.PWD)
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PWD,
+    },
+  });
+  const mailOptions = {
+    from: 'ironboy013@gmail.com',
+    to: process.env.EMAIL,
+    subject: "Test",
+    text: message,
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error(error);
+      res.status(500).send('Internal server error.');
+    } else {
+      console.log('Email sent: ' + info.response);
+      res.sendStatus(200);
+    }
+  });
+});
 
 const db = new sqlite3.Database('db/checkpoints.db', (err) => {
   if (err) {
