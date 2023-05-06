@@ -97,6 +97,7 @@ app.post('/api/sendProposal', (req, res) => {
 //Add Request to History
 app.post('/api/addHistory', (req, res) => {
   const { name, lat, lng, description, img } = req.body;
+  console.log(name);
 
   // Insert new checkpoint into the 'history' table
   db.run(
