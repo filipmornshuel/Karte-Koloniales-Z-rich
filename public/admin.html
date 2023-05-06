@@ -6,24 +6,48 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>OpenLayers Map</title>
     <link rel="stylesheet" href="css/admin.css" type="text/css" />
+    <link rel="stylesheet" href="css/nav.css" type="text/css" />
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
     <script src="js/adminMap.js" defer></script>
   </head>
 
   <body>
-    <div id="navbar">
-      <a class="active" href="checkpointGoogle.html">Home</a>
-      <a href="aboutUS.html">Über uns</a>
-      <a href="contact.html">Kontakt</a>
-      <a href="checkpointAdd.html">Checkpoints</a>
-    </div>
+    <header>
+      <nav class="navbar position-sticky">
+        <a href="" class="nav-branding">DEV.</a>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="index.html" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item">
+            <a href="view/stations.html" class="nav-link">Stationen</a>
+          </li>
+          <li class="nav-item">
+            <a href="view/aboutUs.html" class="nav-link">Über uns</a>
+          </li>
+          <li class="nav-item">
+            <a href="view/contactForm.html" class="nav-link">Kontakt</a>
+          </li>
+          <li class="nav-item">
+            <a href="view/feedback.html" class="nav-link">Feedback</a>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </nav>
+    </header>
+    <script src="js/nav.js"></script>
 
-    <h1>Open Layers Map API</h1>
+    <h1>Karte Koloniales Zürich</h1>
+    <h2>Ein digitaler Stadtrundgang durch Zürich</h2>
     <div id="map"></div>
     <div id="map"></div>
 
     <div id="checkpoint-entries"></div>
-    <h2>Geschichte</h2>
+    <h2 id="subtitle">Geschichte</h2>
     <div class="container">
       <div id="vertical-menu"></div>
       <div id="content">
