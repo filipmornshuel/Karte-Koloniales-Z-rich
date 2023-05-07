@@ -13,59 +13,55 @@
   <script src="js/map.js" defer></script>
   </head>
 
-  <body>
-    <header>
-      <nav class="navbar position-sticky">
-        <a href="" class="nav-branding">DEV.</a>
-        <ul class="nav-menu">
-          <li class="nav-item">
+<body>
+  <header>
+    <nav class="navbar position-sticky">
+        <a href="" class="nav-branding">Zurich</a>
+    <ul class="nav-menu">
+        <li class="nav-item">
             <a href="index.html" class="nav-link">Home</a>
-          </li>
-          <li class="nav-item">
-            <a href="view/stations.html" class="nav-link">Stationen</a>
-          </li>
-          <li class="nav-item">
+        </li>
+        <li class="nav-item">
             <a href="view/aboutUs.html" class="nav-link">Über uns</a>
           </li>
           <li class="nav-item">
             <a href="view/contactForm.html" class="nav-link">Kontakt</a>
-          </li>
-          <li class="nav-item">
-            <a href="view/feedback.html" class="nav-link">Feedback</a>
-          </li>
-        </ul>
-        <div class="hamburger">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-        </div>
-      </nav>
-    </header>
-    <script src="js/nav.js"></script>
-
-    <h1>Karte Koloniales Zürich</h1>
-    <h2>Ein digitaler Stadtrundgang durch Zürich</h2>
-
-    <div>
-      <h3>Anleitung</h3>
-      <h4>1. Station finden</h4>
-      <p>
-        Auf der Karte weiter unten können Sie verschiedene Stationen
-        erkundschaften
-      </p>
-      <h4>2. Station anschauen</h4>
-      <p>
-        Wenn Sie eine Station gefunden haben, können Sie einfach auf eine
-        Klicken und die Station einfach geniessen
-      </p>
-      <h4>3. Eigene Station vorschlagen</h4>
-      <p>
-        Falls Sie selber in Zürich unterwegs sind und eine Kolonialgeschichte zu
-        einer Station gefunden haben, können Sie diese uns einfach vorschlagen,
-        indem Sie den Knopf unten rechts "Station vorschlagen" klicken und das
-        Formular ausfüllen.
-      </p>
+        </li>
+        
+    </ul>
+    <div class="hamburger">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
     </div>
+    </nav>
+    
+</header>
+<script src="js/nav.js"></script>
+
+  <h1>Karte Koloniales Zürich</h1>
+  <h2>Ein digitaler Stadtrundgang durch Zürich</h2>
+  
+  
+  <div>
+    <h3>Anleitung</h3>
+    <h4>1. Station finden</h4>
+    <p>Auf der Karte weiter unten können Sie verschiedene Stationen erkundschaften</p>
+    <h4>2. Station anschauen</h4>
+    <p>Wenn Sie eine Station gefunden haben, können Sie einfach auf eine Klicken und die Station einfach geniessen</p>
+    <h4>3. Liste der Stationen anschauen</h4>
+    <p>Sie könenn auch optional die Liste der Stationen weiter unten anschauen. Wenn Ihnen das Bild zu klein erscheint, können Sie auf das Bild klicken und so vergrössern. 
+      Wenn Sie nochmals klicken, wird sich das Bild wieder schliessen.
+    </p>
+    <h4>4. Eigene Station vorschlagen</h4>
+    <p>Falls Sie selber in Zürich unterwegs sind und eine Kolonialgeschichte zu einer Station gefunden haben,
+      können Sie diese uns einfach vorschlagen, indem Sie den Knopf unten rechts "Station vorschlagen" klicken und
+      das Formular ausfüllen und auf Karte mit dem jeweiligen Standort klicken. Ihre Station wird aber nicht direkt erscheinen, sondern wir werden
+      diese zuerst überprüfen, falls alles korrekt ist, wird Ihre Anfrage angenommen und die Station wird auf der Karte freigeschaltet und für jeden 
+      einsehbar.
+    </p>
+
+  </div>
 
     <div id="map"></div>
     <div id="addMode">
@@ -78,62 +74,52 @@
       <form class="form-container">
         <h1>Station</h1>
 
-        <label for="titleMorn"><b>Titel</b></label>
-        <input type="text" placeholder="Enter name" id="titleMorn" />
-        <label for="description"><b>Description</b></label>
-        <input type="text" placeholder="Enter description" id="description" />
-        <label for="cords"><b>Coordinates</b></label>
-        <input type="text" id="cords" />
-        <label for="img">Image:</label>
-        <input type="file" id="img" />
-        <label for="audio">Audio:</label>
-        <input type="file" id="audio" />
-        <!-- <div class="h-captcha" data-sitekey="b1b8d2fe-686c-4e75-8bc1-5b3857d9b738"></div> -->
-        <button
-          type="button"
-          class="btn"
-          id="send"
-          onclick="saveCheckpointData()"
-        >
-          Send
-        </button>
-        <button type="button" class="btn cancel" onclick="closeForm()">
-          Close
-        </button>
-      </form>
-    </div>
-    <button onclick="location.href='/admin'">Admin-Mode</button>
+      <label for="title"><b>Titel</b></label>
+      <input type="text" placeholder="Enter name" id="titleMorn">
+      <label for="name"><b>Beschreibung</b></label>
+      <input type="text" placeholder="Enter description" id="description">
+      <label for="name"><b>Koordinaten</b></label>
+      <input type="text" id="cords">
+      <label for="image"><b>Bild</b></label>
+      <input type="file" id="img" accept="image/*">
+      <label for="audio"><b>Tonaufnahme</b></label>
+      <input type="file" id="audio" accept="audio/*">
+      <!-- <div class="h-captcha" data-sitekey="b1b8d2fe-686c-4e75-8bc1-5b3857d9b738"></div> -->
+      <button type="button" class="btn" id="send" onclick="saveCheckpointData()">Senden</button>
+      <button type="button" class="btn cancel" onclick="closeForm()">Schliessen</button>
+    </form>
+  </div>
 
-    <div id="checkpoint-entries">
-      <h2 id="nameh2"></h2>
-      <label for=""></label>
-      <label for="" id="labelimg"></label>
-      <label for="" id="labelaudio"></label>
-    </div>
 
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-        <span class="close">&times;</span>
-      </div>
-    </div>
+  <div id="checkpoint-entries">
+  </div>
 
-    <footer class="footer">
-      <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link 1</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link 2</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link 3</a>
-          </li>
-        </ul>
-        <span class="navbar-text"> © 2023 - NO rights reserved </span>
-      </nav>
-    </footer>
-  </body>
+
+  <!-- The Modal -->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    
+  </div>
+</div>
+
+ 
+  <footer class="footer">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/view/privacy.html">Datenschutz</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/view/sources.html">Quellen</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/view/agb.html">AGB</a>
+        </li>
+      </ul>
+      
+    </nav>
+  </footer>
+</body>
 </html>
