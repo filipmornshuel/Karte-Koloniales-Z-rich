@@ -33,6 +33,83 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + 'index.html'));
 });
 
+function isAuthenticated(req, res, next) {
+  if (req.session.user) next()
+  else res.redirect('/login');
+}
+
+app.get('/admin', isAuthenticated, function(req, res) {
+ res.sendFile(path.join(__dirname + "/admin.html"));
+});
+
+app.get('/login', function (req, res) {
+  res.send('<form action="/loginProcess" method="post">' +
+    'Username: <input name="user"><br>' +
+    'Password: <input name="pass" type="password"><br>' +
+    '<input type="submit" text="Login"></form>')
+});
+
+app.post('/loginProcess', express.urlencoded({ extended: false }), function (req, res) {
+
+  const data = req.body;
+  let user = data.user;
+
+  db.all("SELECT * FROM users WHERE user=?", [user],(err, rows) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Server Error");
+    } else if (rows.length > 0) {
+      console.log("Test")
+      bcrypt.compare(data.pass, rows[0].pass, function(err, result) {
+        if (err) {
+          console.log(err);
+        } else if (result) {
+          req.session.regenerate(function (err) {
+            if (err) next(err)
+            req.session.user = req.body.user
+
+            req.session.save(function (err) {
+              if (err) return next(err)
+              res.redirect('/admin.html');
+            });
+          });
+        } else {
+          res.status(401).send("Invalid username or password");
+        }
+      })
+    } else {
+      res.status(401).send("Invalid username or password");
+    }
+  });
+})
+
+app.get('/logout', function (req, res, next) {
+
+  req.session.user = null
+  req.session.save(function (err) {
+    if (err) next(err)
+
+    req.session.regenerate(function (err) {
+      if (err) next(err)
+      res.redirect('/');
+    });
+  });
+});
+
+
+//Get all histroy entries
+app.get('/api/getHistory', (req, res) => {
+  db.all('SELECT id,name,description,img,audio FROM history', (err, rows) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    } else {
+      console.log(rows);
+      res.send(rows);
+    }
+  });
+});
+
 // Add a new checkpoint to the database
 app.post('/api/checkpoints', (req, res) => {
   const { name, lat, lng, description, img } = req.body;
@@ -57,91 +134,6 @@ app.post('/api/checkpoints', (req, res) => {
           img
         };
         res.json(newCheckpoint);
-      }
-    }
-  );
-});
-
-//Send Station Request
-app.post('/api/sendProposal', (req, res) => {
-  const { title, lat, lng, description, img, audio } = req.body;
-
-  // Insert new checkpoint into the 'readCheckpoints' table
-  db.run(
-    `INSERT INTO requestCheckpoints (title, lat, lng, description, img, audio)
-          VALUES (?, ?, ?, ?, ?, ?)`,
-    [title, lat, lng, description, img, audio],
-    function (err) {
-      if (err) {
-        console.error(err.message);
-        res.status(500).send('Internal server error.');
-      } else {
-        // Return the new checkpoint with its ID
-        const newCheckpoint = {
-          id: this.lastID,
-          title,
-          lat,
-          lng,
-          description,
-          img,
-          audio,
-        };
-        res.json(newCheckpoint);
-      }
-    }
-  );
-});
-
-//Add Request to History
-app.post('/api/addHistory', (req, res) => {
-  const { name, lat, lng, description, img } = req.body;
-  console.log(name);
-
-  // Insert new checkpoint into the 'history' table
-  db.run(
-    `INSERT INTO history (name, lat, lng, description, img)
-          VALUES (?, ?, ?, ?, ?)`,
-    [name, lat, lng, description, img],
-    function (err) {
-      if (err) {
-        console.error(err.message);
-        res.status(500).send('Internal server error.');
-      } else {
-        // Return the new checkpoint with its ID
-        const newCheckpoint = {
-          id: this.lastID,
-          name,
-          lat,
-          lng,
-          description,
-          img
-        };
-        res.json(newCheckpoint);
-      }
-    }
-  );
-});
-
-//Update requested Station
-app.put('/api/updatecheckpoints', (req, res) => {
-  const { id, name, lat, lng, description, img } = req.body;
-
-  db.run(
-    `UPDATE requestCheckpoints SET name=?, description=? WHERE id=? `,
-    [name, description, id],
-    function (err) {
-      if (err) {
-        console.error(err.message);
-        res.status(500).send('Internal server error.');
-      } else {
-        const update = {
-          name,
-          lat,
-          lng,
-          description,
-          img
-        };
-        res.json(update);
       }
     }
   );
