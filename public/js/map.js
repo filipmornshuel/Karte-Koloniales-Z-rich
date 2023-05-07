@@ -293,9 +293,9 @@ map.on('singleclick', function (evt) {
           document.getElementsByClassName('open-button')[0].style.display = 'none';
           // Create the entries table
           let modalContent = document.getElementsByClassName('modal-content')[0];
-          console.log(modalContent)
           let modalContentTable = document.createElement('table');
-         
+          modalContentTable.style.display = 'block';
+          modalContentTable.style.width = '100%';
 
           // Erstelle ein neues img-Element
           let imgElement = document.createElement('img');
@@ -333,6 +333,12 @@ map.on('singleclick', function (evt) {
           descCell.innerHTML = entry.description;
 
           titleCell.innerHTML = entry.title;
+
+          titleCell.style.textAlign = 'center';
+descCell.style.textAlign = 'center';
+imgCell.style.textAlign = 'center';
+audioCell.style.textAlign = 'center';
+
           modalContent.appendChild(modalContentTable);
           modal.appendChild(modalContent);
           

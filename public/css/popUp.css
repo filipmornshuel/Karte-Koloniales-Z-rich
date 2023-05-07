@@ -30,18 +30,16 @@ body {font-family: Arial, Helvetica, sans-serif;}
 }
 
 /* Modal Title */
-.modal-title {
+.table {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
   text-align: center;
+  margin-bottom: 10px;
+  display: block;
 }
 
-/* Modal Description */
-.modal-description {
-  text-align: center;
-  margin-bottom: 10px;
-}
+
 
 /* Modal Image */
 .modal-content img {
@@ -55,7 +53,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
 }
 
 /* Modal Audio */
-.modal-audio {
+.modal-content audio {
   width: 100%;
   margin-bottom: 10px;
 }
