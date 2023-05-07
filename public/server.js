@@ -52,33 +52,36 @@ app.get('/login', function (req, res) {
 app.post('/loginProcess', express.urlencoded({ extended: false }), function (req, res) {
 
   const data = req.body;
-  var user = data.user;
-  bcrypt.hash(data.pass, saltRounds, function(err, hash) {
+  let user = data.user;
+
+  db.all("SELECT * FROM users WHERE user=?", [user],(err, rows) => {
     if (err) {
       console.log(err);
-    } else {
-      console.log(data);
-      db.all("SELECT * FROM users WHERE user=? AND pass=?", [user, hash],(err, rows) => {
+      res.status(500).send("Server Error");
+    } else if (rows.length > 0) {
+      console.log("Test")
+      bcrypt.compare(data.pass, rows[0].pass, function(err, result) {
         if (err) {
           console.log(err);
-          res.status(500).send("Server Error");
-        } else {
-          if (rows.length == 1) {
-            req.session.regenerate(function (err) {
-              if (err) next(err)
-              req.session.user = req.body.user
+        } else if (result) {
+          req.session.regenerate(function (err) {
+            if (err) next(err)
+            req.session.user = req.body.user
 
-              req.session.save(function (err) {
-                if (err) return next(err)
-                res.redirect('/admin.html')
-              });
+            req.session.save(function (err) {
+              if (err) return next(err)
+              res.redirect('/admin.html');
             });
-          };
+          });
+        } else {
+          res.status(401).send("Invalid username or password");
         }
-      });
+      })
+    } else {
+      res.status(401).send("Invalid username or password");
     }
-  }
-);
+  });
+})
 
 app.get('/logout', function (req, res, next) {
 
@@ -92,18 +95,7 @@ app.get('/logout', function (req, res, next) {
     });
   });
 });
-  
-req.session.regenerate(function (err) {
-  if (err) next(err)
 
-  req.session.user = req.body.user
-
-  req.session.save(function (err) {
-    if (err) return next(err)
-    res.redirect('/admin.html')
-  });
-});
-});
 
 //Get all histroy entries
 app.get('/api/getHistory', (req, res) => {
