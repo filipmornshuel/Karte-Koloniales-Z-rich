@@ -152,7 +152,7 @@ app.post('/api/checkpoint/create', (req, res) => {
           lng,
           description,
           img,
-          audio,
+          audio
         };
         res.json(newCheckpoint);
       }
@@ -182,7 +182,7 @@ app.post('/api/sendProposal', (req, res) => {
           lng,
           description,
           img,
-          audio,
+          audio
         };
         res.json(newCheckpoint);
       }
@@ -208,7 +208,7 @@ app.post('/api/addHistory', (req, res) => {
         // Return the new checkpoint with its ID
         const newCheckpoint = {
           id: this.lastID,
-          title,
+          name,
           lat,
           lng,
           description,
@@ -222,11 +222,11 @@ app.post('/api/addHistory', (req, res) => {
 
 //Update requested Station
 app.put('/api/updatecheckpoints', (req, res) => {
-  const { id, name, lat, lng, description, img } = req.body;
+  const { id, name, lat, lng, description, img, audio } = req.body;
 
   db.run(
-    `UPDATE requestCheckpoints SET name=?, description=? WHERE id=? `,
-    [name, description, id],
+    `UPDATE requestCheckpoints SET title=?, description=?, img=?, audio=?  WHERE id=? `,
+    [name, description, img, audio, id],
     function (err) {
       if (err) {
         console.error(err.message);
@@ -237,7 +237,8 @@ app.put('/api/updatecheckpoints', (req, res) => {
           lat,
           lng,
           description,
-          img
+          img,
+          audio
         };
         res.json(update);
       }

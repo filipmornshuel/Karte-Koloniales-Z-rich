@@ -111,7 +111,8 @@ function saveCheckpointData() {
           coordinate,
           title,
           description,
-          imgUrl.toString()
+          imgUrl.toString(),
+          audioUrl.toString()
         );
       });
     });
@@ -123,7 +124,7 @@ function saveCheckpointData() {
     frImg.addEventListener('load', () => {
       let imgUrl = frImg.result;
       addCheckpoint(coordinate, title, description, imgUrl.toString(), '');
-      addHistoryEntry(coordinate, title, description, imgUrl.toString());
+      addHistoryEntry(coordinate, title, description, imgUrl.toString(), '');
     });
   } else if (fileAudio) {
     let frAudio = new FileReader();
@@ -133,12 +134,13 @@ function saveCheckpointData() {
     frAudio.addEventListener('load', () => {
       let audioUrl = frAudio.result;
       addCheckpoint(coordinate, title, description, '', audioUrl.toString());
-      addHistoryEntry(coordinate, title, description, imgUrl.toString());
+      addHistoryEntry(coordinate, title, description, '',audioUrl.toString());
     });
   }
+  closeForm();
 }
 
-function addCheckpoint(coordinate, title, description, blobImg) {
+function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
   console.log(coordinate, title, description, blobImg, blobAudio);
   addCheckpointMode = false;
 
@@ -154,7 +156,7 @@ function addCheckpoint(coordinate, title, description, blobImg) {
         lat: coordinate[1],
         description: description,
         img: blobImg,
-        audio: blobAudio,
+        audio: blobAudio
       }),
     })
       .then((response) => {
@@ -266,7 +268,7 @@ map.on('click', function (evt) {
   }
 });*/
 
-vectorSource.addFeatures(checkpoints);
+vectorSource.addFeatures(checkpoints); //????
 
 map.on('singleclick', function (evt) {
   if (!addCheckpointMode) {

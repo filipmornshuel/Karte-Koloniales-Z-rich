@@ -70,22 +70,23 @@ function accept() {
   vectorSource.addFeature(checkpoint);
 }
 
-async function addCheckpoint(coordinate, name, description, blobImg) {
-  console.log(coordinate, name, description, blobImg);
+async function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
+  console.log(coordinate, title, description, blobImg, blobAudio);
   addCheckpointMode = false;
-  if (name != null && name != '') {
+  if (title != null && title != '') {
     try {
-      const response = await fetch('/api/checkpoints', {
+      const response = await fetch('/api/checkpoint/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: name,
+          title: title,
           lng: coordinate[0],
           lat: coordinate[1],
           description: description,
           img: blobImg,
+          audio: blobAudio
         })
       });
       if (response.status === 200) {
@@ -99,10 +100,36 @@ async function addCheckpoint(coordinate, name, description, blobImg) {
   }
 }
 
+function saveCheckpointData(coordinate, title, description, img, audio) {
+
+  title = title;
+  description = description;
+  blobImg = img;
+  blobAudio = audio;
+ 
+  if (blobImg && blobAudio) {
+   
+     addCheckpoint(coordinate, title, description, blobImg, blobAudio);
+     
+  
+  } else if (blobImg) {
+ 
+  
+    addCheckpoint(coordinate, title, description, blobImg, '');
+    
+ 
+  } else if (blobAudio) {
+ 
+  
+    addCheckpoint(coordinate, title, description, '', blobAudio);
+   
+  }
+ }
+
 async function updateCheckpoint(id, coordinate, name, description, blobImg) {
   if (name != null && name != '') {
     try {
-      const response = await fetch('/api/updateCheckpoints', {
+      const response = await fetch('/api/updatecheckpoints', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -230,7 +257,7 @@ function loadRequests() {
         accept.innerHTML = 'Akzeptieren';
 
         accept.addEventListener('click', () => {
-          addCheckpoint([checkpoint.lng, checkpoint.lat], entry.name, entry.description, entry.img);
+          saveCheckpointData([checkpoint.lng, checkpoint.lat], entry.title, entry.description, entry.img, entry.audio);
           removeRequest(checkpoint.id);
           window.location.reload();
         });
