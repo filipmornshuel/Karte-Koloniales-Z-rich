@@ -1,3 +1,8 @@
+/**
+ * Loading the map and form
+ * @author JoksimovicM, filipmornshuel
+ * @since 01.03.2023
+ */
 let addCheckpointMode = false;
 let title;
 let description;
@@ -10,6 +15,10 @@ let currentCheckpoint;
 const btn = document.getElementById('send');
 const addStatBtn = document.getElementById('open-button');
 
+/**
+ * creates the layer for the map and creating an icon for the checkpoints
+ * @author filipmornshuel
+ */
 var vectorLayer = new ol.layer.Vector({
   source: vectorSource,
   style: function (feature) {
@@ -40,6 +49,10 @@ var vectorLayer = new ol.layer.Vector({
   },
 });
 
+/**
+ * loading the map with a view from Zurich
+ * @author filipmornshuel
+ */
 var map = new ol.Map({
   target: 'map',
   layers: [
@@ -54,12 +67,20 @@ var map = new ol.Map({
   }),
 });
 
-function createTableElement(element, content, trh){
+/**
+ * creating an element for table
+ * @author JoksimovicM
+ */
+function createTableElement(element, content, trh) {
   let th = document.createElement(element);
   th.innerHTML = content;
   trh.appendChild(th);
 }
 
+/**
+ * accepting the checkpoint-request
+ * @author JoksimovicM
+ */
 function accept() {
   var checkpoint = new ol.Feature({
     geometry: new ol.geom.Point(coordinate),
@@ -70,7 +91,17 @@ function accept() {
   vectorSource.addFeature(checkpoint);
 }
 
-async function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
+/**
+ * adding the checkpoint to the database with a fetch
+ * @author JoksimovicM
+ */
+async function addCheckpoint(
+  coordinate,
+  title,
+  description,
+  blobImg,
+  blobAudio
+) {
   console.log(coordinate, title, description, blobImg, blobAudio);
   addCheckpointMode = false;
   if (title != null && title != '') {
@@ -78,7 +109,7 @@ async function addCheckpoint(coordinate, title, description, blobImg, blobAudio)
       const response = await fetch('/api/checkpoint/create', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           title: title,
@@ -86,8 +117,8 @@ async function addCheckpoint(coordinate, title, description, blobImg, blobAudio)
           lat: coordinate[1],
           description: description,
           img: blobImg,
-          audio: blobAudio
-        })
+          audio: blobAudio,
+        }),
       });
       if (response.status === 200) {
         console.log('Checkpoint saved to database');
@@ -100,39 +131,36 @@ async function addCheckpoint(coordinate, title, description, blobImg, blobAudio)
   }
 }
 
+/**
+ * saving the checkpoint locally
+ * @author JoksimovicM
+ */
 function saveCheckpointData(coordinate, title, description, img, audio) {
-
   title = title;
   description = description;
   blobImg = img;
   blobAudio = audio;
- 
-  if (blobImg && blobAudio) {
-   
-     addCheckpoint(coordinate, title, description, blobImg, blobAudio);
-     
-  
-  } else if (blobImg) {
- 
-  
-    addCheckpoint(coordinate, title, description, blobImg, '');
-    
- 
-  } else if (blobAudio) {
- 
-  
-    addCheckpoint(coordinate, title, description, '', blobAudio);
-   
-  }
- }
 
+  if (blobImg && blobAudio) {
+    addCheckpoint(coordinate, title, description, blobImg, blobAudio);
+  } else if (blobImg) {
+    addCheckpoint(coordinate, title, description, blobImg, '');
+  } else if (blobAudio) {
+    addCheckpoint(coordinate, title, description, '', blobAudio);
+  }
+}
+
+/**
+ * updating the checkpoint with a put-request
+ * @author JoksimovicM
+ */
 async function updateCheckpoint(id, coordinate, name, description, blobImg) {
   if (name != null && name != '') {
     try {
       const response = await fetch('/api/updatecheckpoints', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           id: id,
@@ -141,7 +169,7 @@ async function updateCheckpoint(id, coordinate, name, description, blobImg) {
           lat: coordinate[1],
           description: description,
           img: blobImg,
-        })
+        }),
       });
       if (response.status === 200) {
         console.log('Checkpoint updated');
@@ -154,15 +182,19 @@ async function updateCheckpoint(id, coordinate, name, description, blobImg) {
   }
 }
 
+/**
+ * declining/removing the checkpoint-request
+ * @author JoksimovicM
+ */
 async function removeRequest(id) {
   if (id != null && id != '') {
     try {
       const response = await fetch('/api/removeRequest', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({id: id})
+        body: JSON.stringify({ id: id }),
       });
       if (response.status === 200) {
         console.log('Checkpoint deleted');
@@ -175,13 +207,17 @@ async function removeRequest(id) {
   }
 }
 
+/**
+ * loading the history with a fetch
+ * @author JoksimovicM
+ */
 async function loadHistory() {
   try {
     const response = await fetch('/api/getHistory', {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     if (response.status === 200) {
       const histroyEntries = await response.json();
@@ -201,9 +237,14 @@ async function loadHistory() {
     console.error('Error loading history', error);
   }
 }
+
+/**
+ * loading all requests from the database with a fetch
+ * @author JoksimovicM
+ */
 function loadRequests() {
   fetch('/api/loadRequests')
-    .then(response => {
+    .then((response) => {
       if (response.ok) {
         return response.json();
       } else {
@@ -211,7 +252,7 @@ function loadRequests() {
         throw new Error('Network response was not ok.');
       }
     })
-    .then(checkpoints => {
+    .then((checkpoints) => {
       let entries = document.getElementById('checkpoint-entries');
       let entriesTable = document.createElement('table');
       const trh = entriesTable.insertRow();
@@ -228,9 +269,9 @@ function loadRequests() {
           title: checkpoint.title,
           description: checkpoint.description,
           img: checkpoint.img,
-          audio: checkpoint.audio
-        }
-        
+          audio: checkpoint.audio,
+        };
+
         const trd = entriesTable.insertRow();
         let titleCell = trd.insertCell(0);
         let descCell = trd.insertCell(1);
@@ -257,7 +298,13 @@ function loadRequests() {
         accept.innerHTML = 'Akzeptieren';
 
         accept.addEventListener('click', () => {
-          saveCheckpointData([checkpoint.lng, checkpoint.lat], entry.title, entry.description, entry.img, entry.audio);
+          saveCheckpointData(
+            [checkpoint.lng, checkpoint.lat],
+            entry.title,
+            entry.description,
+            entry.img,
+            entry.audio
+          );
           removeRequest(checkpoint.id);
           window.location.reload();
         });
@@ -293,7 +340,13 @@ function loadRequests() {
           save.setAttribute('hidden', true);
           titleCell.setAttribute('contenteditable', 'false');
           descCell.setAttribute('contenteditable', 'false');
-          updateCheckpoint(checkpoint.id, [checkpoint.lng, checkpoint.lat], titleCell.innerHTML, descCell.innerHTML, entry.img);
+          updateCheckpoint(
+            checkpoint.id,
+            [checkpoint.lng, checkpoint.lat],
+            titleCell.innerHTML,
+            descCell.innerHTML,
+            entry.img
+          );
           window.location.reload();
         });
 
@@ -304,7 +357,7 @@ function loadRequests() {
 
         const feature = new ol.Feature({
           geometry: new ol.geom.Point([checkpoint.lng, checkpoint.lat]),
-          title: checkpoint.title
+          title: checkpoint.title,
         });
         vectorSource.addFeature(feature);
       }

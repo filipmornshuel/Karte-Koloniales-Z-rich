@@ -1,3 +1,9 @@
+/**
+ * Loading the map and form
+ * @author filipmornshuel, JoksimovicM
+ * @since 01.03.2023
+ */
+
 let addCheckpointMode = false;
 let title;
 let description;
@@ -11,12 +17,22 @@ let addedCurrentCheckpoint = false;
 const btn = document.getElementById('send');
 const addStatBtn = document.getElementById('open-button');
 
+/**
+ * Opens the form from index.html, but edited for my purposes
+ * source: https://www.w3schools.com/howto/howto_js_popup_form.asp
+ * @author filipmornshuel
+ */
 function openForm() {
   document.getElementById('myForm').style.display = 'block';
   document.getElementsByClassName('open-button')[0].style.display = 'none';
   addCheckpointMode = true;
 }
 
+/**
+ * Opens the form from index.html, but edited for my purposes
+ * source: https://www.w3schools.com/howto/howto_js_popup_form.asp
+ * @author filipmornshuel
+ */
 function closeForm() {
   document.getElementById('myForm').style.display = 'none';
   document.getElementsByClassName('open-button')[0].style.display = 'block';
@@ -24,6 +40,57 @@ function closeForm() {
   addCheckpointMode = false;
 }
 
+/**
+ * a function to make a picture bigger in a modal
+ * @author filipmornshuel
+ */
+function showImageInModal(imageUrl) {
+  // Create a modal
+  const modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+  modal.style.zIndex = '1000';
+  modal.style.display = 'flex';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+
+  const img = document.createElement('img');
+  img.style.maxWidth = '100%';
+  img.src = imageUrl;
+
+  modal.appendChild(img);
+
+  // Add a click event listener to the modal to close it when clicked
+  modal.addEventListener('click', () => {
+    modal.parentNode.removeChild(modal);
+  });
+
+  document.body.appendChild(modal);
+}
+
+/**
+ * switches the checkpointmode for adding checkpoints to the map
+ * @author filipmornshuel
+ */
+function switchMode() {
+  let modeButton = document.getElementById('modeButton');
+  if (addCheckpointMode) {
+    addCheckpointMode = false;
+    modeButton.innerHTML = 'Switch to Add Checkpoint Mode';
+  } else {
+    addCheckpointMode = true;
+    modeButton.innerHTML = 'Switch to Exploration Mode';
+  }
+}
+
+/**
+ * creates the layer for the map and creating an icon for the checkpoints
+ * @author filipmornshuel
+ */
 let vectorLayer = new ol.layer.Vector({
   source: vectorSource,
   style: function (feature) {
@@ -53,7 +120,10 @@ let vectorLayer = new ol.layer.Vector({
   },
 });
 
-//Die Map laden
+/**
+ * loading the map with a view from Zurich
+ * @author filipmornshuel
+ */
 let map = new ol.Map({
   target: 'map',
   layers: [
@@ -68,18 +138,10 @@ let map = new ol.Map({
   }),
 });
 
-//Für den Mode wechsel zuständig
-function switchMode() {
-  let modeButton = document.getElementById('modeButton');
-  if (addCheckpointMode) {
-    addCheckpointMode = false;
-    modeButton.innerHTML = 'Switch to Add Checkpoint Mode';
-  } else {
-    addCheckpointMode = true;
-    modeButton.innerHTML = 'Switch to Exploration Mode';
-  }
-}
-
+/**
+ * saving the data from a new added checkpoint and converting the img and audio to base64 string
+ * @author filipmornshuel
+ */
 function saveCheckpointData() {
   title = document.getElementById('titleMorn').value;
   title = document.getElementById('titleMorn').value;
@@ -141,6 +203,10 @@ function saveCheckpointData() {
   closeForm();
 }
 
+/**
+ * sending a post request to the database with the data from above
+ * @author filipmornshuel
+ */
 function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
   console.log(coordinate, title, description, blobImg, blobAudio);
   addCheckpointMode = false;
@@ -157,7 +223,7 @@ function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
         lat: coordinate[1],
         description: description,
         img: blobImg,
-        audio: blobAudio
+        audio: blobAudio,
       }),
     })
       .then((response) => {
@@ -170,24 +236,15 @@ function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
       .catch((error) => {
         console.log('Error saving checkpoint to database', error);
       });
-
-    let checkpoint = new ol.Feature({
-      geometry: new ol.geom.Point(coordinate),
-      title: title,
-      description: description,
-      img: blobImg,
-      audio: blobAudio,
-    });
-    //vectorSource.addFeature(checkpoint);
   }
 }
 
+/**
+ * sending a history entry to the database for the admin
+ * @author JoksimovicM
+ */
 function addHistoryEntry(coordinate, title, description, blobImg, blobAudio) {
-
   if (title != null && title != '') {
-
-    // send checkpoint data to server
-
     let xhr = new XMLHttpRequest();
     xhr.open('POST', '/api/addHistory');
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -198,16 +255,17 @@ function addHistoryEntry(coordinate, title, description, blobImg, blobAudio) {
         console.log('Error saving checkpoint to database');
       }
     };
-    xhr.send(
-      JSON.stringify({
-        name: title,
-        lng: coordinate[0],
-        lat: coordinate[1],
-        description: description,
-        img: blobImg,
-        audio: blobAudio,
-      }),
-    )
+    xhr
+      .send(
+        JSON.stringify({
+          name: title,
+          lng: coordinate[0],
+          lat: coordinate[1],
+          description: description,
+          img: blobImg,
+          audio: blobAudio,
+        })
+      )
       .then((response) => {
         if (response.ok) {
           console.log('Checkpoint saved to database');
@@ -230,9 +288,10 @@ function addHistoryEntry(coordinate, title, description, blobImg, blobAudio) {
   }
 }
 
-// Diese Funktion sollte noch überarbeitet werden, wenn Zeit übrig bleibt,
-// dass man denn Checkpoint noch variabel verschieben kann, bevor man den Vorschlag gemacht hat.
-
+/**
+ * adding a temporary checkpoint to the map for the user
+ * @author filipmornshuel
+ */
 function fakeAddCheckpoint(coordinate) {
   console.log(coordinate, title, description, blobImg);
   addCheckpointMode = true;
@@ -248,20 +307,22 @@ function fakeAddCheckpoint(coordinate) {
   currentCheckpoint = checkpoint;
 }
 
+/**
+ * event-listener waiting for a click on the map
+ * @author filipmornshuel
+ */
 map.on('click', function (evt) {
   if (addCheckpointMode) {
     coordinate = evt.coordinate;
     document.getElementById('cords').value = coordinate;
     fakeAddCheckpoint(coordinate);
-    
-    //addTemporaryGeometry(coordinate);
-    //fakeAddCheckpoint(coordinate, title)
   }
 });
 
-
-vectorSource.addFeatures(checkpoints);
-
+/**
+ * event-listener waiting for a singleclick on a checkpoint to do a fetch-request to the database
+ * @author filipmornshuel
+ */
 map.on('singleclick', function (evt) {
   if (!addCheckpointMode) {
     let feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
@@ -269,11 +330,8 @@ map.on('singleclick', function (evt) {
     });
 
     if (feature) {
-      // Show the modal
-    
-      // When the user clicks the button, open the modal
       let modal = document.getElementById('myModal');
-          modal.style.display = 'block';
+      modal.style.display = 'block';
 
       // Fetch the checkpoint data from the server
       fetch(`/api/checkpoint?title=${feature.get('title')}`)
@@ -284,24 +342,19 @@ map.on('singleclick', function (evt) {
           throw new Error('Network response was not ok.');
         })
         .then((checkpoint) => {
-          document.getElementsByClassName('open-button')[0].style.display = 'none';
+          document.getElementsByClassName('open-button')[0].style.display =
+            'none';
           // Create the entries table
-          let modalContent = document.getElementsByClassName('modal-content')[0];
+          let modalContent =
+            document.getElementsByClassName('modal-content')[0];
           let modalContentTable = document.createElement('table');
           modalContentTable.style.display = 'block';
           modalContentTable.style.width = '100%';
 
-          // Erstelle ein neues img-Element
           let imgElement = document.createElement('img');
           let audioElement = document.createElement('audio');
           audioElement.setAttribute('controls', true);
 
-          /*
-          createTableElement('th', 'Titel', trh);
-          createTableElement('th', 'Beschreibung', trh);
-          createTableElement('th', 'Bild', trh);
-          createTableElement('th', 'Audio', trh);
-*/
           const entry = {
             title: checkpoint.title,
             description: checkpoint.description,
@@ -310,9 +363,7 @@ map.on('singleclick', function (evt) {
           };
 
           const trd = modalContentTable.insertRow();
-          
           let titleCell = trd.insertCell(0);
-
           let descCell = trd.insertCell(1);
           let imgCell = trd.insertCell(2);
           let audioCell = trd.insertCell(3);
@@ -324,20 +375,10 @@ map.on('singleclick', function (evt) {
             audioCell.appendChild(audioElement);
           }
 
-          descCell.innerHTML = entry.description;
-
           titleCell.innerHTML = entry.title;
-
-          titleCell.style.textAlign = 'center';
-descCell.style.textAlign = 'center';
-imgCell.style.textAlign = 'center';
-audioCell.style.textAlign = 'center';
-
+          descCell.innerHTML = entry.description;
           modalContent.appendChild(modalContentTable);
           modal.appendChild(modalContent);
-          
-          
-
         })
         .catch((error) => {
           console.error('There was a problem fetching checkpoint data:', error);
@@ -350,7 +391,8 @@ audioCell.style.textAlign = 'center';
         modal.style.display = 'none';
         let modalContentTable = document.querySelector('#myModal table');
         modalContentTable.parentNode.removeChild(modalContentTable);
-        document.getElementsByClassName('open-button')[0].style.display = 'block';
+        document.getElementsByClassName('open-button')[0].style.display =
+          'block';
       };
 
       // When the user clicks anywhere outside of the modal, close it
@@ -360,59 +402,25 @@ audioCell.style.textAlign = 'center';
           modal.style.display = 'none';
           let modalContentTable = document.querySelector('#myModal table');
           modalContentTable.parentNode.removeChild(modalContentTable);
-          document.getElementsByClassName('open-button')[0].style.display = 'block';
+          document.getElementsByClassName('open-button')[0].style.display =
+            'block';
         }
       };
     }
   }
 });
 
-function showImageInModal(imageUrl) {
-  // Create a modal
-  const modal = document.createElement('div');
-  modal.style.position = 'fixed';
-  modal.style.top = '0';
-  modal.style.left = '0';
-  modal.style.width = '100%';
-  modal.style.height = '100%';
-  modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
-  modal.style.zIndex = '1000';
-  modal.style.display = 'flex';
-  modal.style.justifyContent = 'center';
-  modal.style.alignItems = 'center';
-
-  // Create an image element
-  const img = document.createElement('img');
-  img.style.maxWidth = '100%';
-  img.src = imageUrl;
-
-  // Add the image element to the modal
-  modal.appendChild(img);
-
-  // Add a click event listener to the modal to close it when clicked
-  modal.addEventListener('click', () => {
-    modal.parentNode.removeChild(modal);
-  });
-
-  // Add the modal to the body
-  document.body.appendChild(modal);
-}
-
-
+/**
+ * a function to load all checkpoints from the database with a fetch
+ * @author filipmornshuel
+ */
 function loadCheckpoints() {
   fetch('/api/checkpoints')
     .then((response) => response.json())
     .then((checkpoints) => {
       let entries = document.getElementById('checkpoint-entries');
       let entriesTable = document.createElement('table');
-      const trh = entriesTable.insertRow();
 
-      /*
-      createTableElement('th', 'Titel', trh);
-      createTableElement('th', 'Beschreibung', trh);
-      createTableElement('th', 'Bild', trh);
-      createTableElement('th', 'Audio', trh);
-*/
       for (let i = 0; i < checkpoints.length; i++) {
         const checkpoint = checkpoints[i];
         const entry = {
@@ -434,7 +442,7 @@ function loadCheckpoints() {
 
         imgElement.src = entry.img.toString();
         imgCell.appendChild(imgElement);
-        
+
         imgElement.addEventListener('click', () => {
           showImageInModal(entry.img.toString());
         });
@@ -447,12 +455,12 @@ function loadCheckpoints() {
         titleCell.innerHTML = entry.title;
         descCell.innerHTML = entry.description;
 
-        // Ein neues ol.Feature-Objekt erstellen
+        //Drawing the checkpoints on the map
         const feature = new ol.Feature({
           geometry: new ol.geom.Point([checkpoint.lng, checkpoint.lat]),
           title: checkpoint.title,
         });
-        // Füge das Feature zum Vektorlayer hinzu
+
         vectorSource.addFeature(feature);
       }
       entries.appendChild(entriesTable);
@@ -460,12 +468,6 @@ function loadCheckpoints() {
     .catch((error) => {
       console.log('no data has been found.', error);
     });
-}
-
-function createTableElement(element, content, trh) {
-  let th = document.createElement(element);
-  th.innerHTML = content;
-  trh.appendChild(th);
 }
 
 loadCheckpoints();
