@@ -5,6 +5,9 @@ const path = require('path');
 const hcaptcha = require('hcaptcha');
 require('dotenv').config({ path: '../.env' });
 const HCAPTCHA_SECRET_KEY = process.env.SECRET_KEY;
+const hcaptcha = require('hcaptcha');
+require('dotenv').config({ path: '../.env' });
+const HCAPTCHA_SECRET_KEY = process.env.SECRET_KEY;
 const app = express();
 const port = 3000;
 const nodemailer = require('nodemailer');
@@ -208,11 +211,12 @@ app.post('/api/addHistory', (req, res) => {
         // Return the new checkpoint with its ID
         const newCheckpoint = {
           id: this.lastID,
-          name,
+          title,
           lat,
           lng,
           description,
-          img
+          img,
+          audio,
         };
         res.json(newCheckpoint);
       }

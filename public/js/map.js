@@ -82,6 +82,7 @@ function switchMode() {
 
 function saveCheckpointData() {
   title = document.getElementById('titleMorn').value;
+  title = document.getElementById('titleMorn').value;
   description = document.getElementById('description').value;
   blobImg = document.getElementById('img');
   blobAudio = document.getElementById('audio');
@@ -257,18 +258,9 @@ map.on('click', function (evt) {
     //fakeAddCheckpoint(coordinate, title)
   }
 });
-/*
-map.on('click', function (evt) {
-  if (addCheckpointMode) {
-    coordinate = evt.coordinate;
-    document.getElementById('cords').value = coordinate;
-    fakeAddCheckpoint(coordinate, title);
-    //addTemporaryGeometry(coordinate);
-    //fakeAddCheckpoint(coordinate, title)
-  }
-});*/
 
-vectorSource.addFeatures(checkpoints); //????
+
+vectorSource.addFeatures(checkpoints);
 
 map.on('singleclick', function (evt) {
   if (!addCheckpointMode) {

@@ -65,7 +65,7 @@ body{
 
 /* Set a style for the submit/login button */
 .form-container .btn {
-  background-color: #04aa6d;
+  background-color: #04AA6D;
   color: white;
   padding: 16px 20px;
   border: none;
@@ -171,6 +171,7 @@ body{
   border-radius: 5px;
   box-shadow: 0 0 5px #ccc;
   margin-right: 20px;
+
 }
 
 .post-image img {
@@ -182,14 +183,14 @@ body{
 }
 
 .post-content {
-  font-family: "Segoe UI", sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #333;
 }
 
 .post-content h2 {
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 24px;
   font-weight: bold;
   margin: 0 0 10px 0;
@@ -203,7 +204,7 @@ body{
   margin-top: 11.5rem;
   margin-left: 3.5rem;
   text-align: center;
-  background-color: #4caf50;
+  background-color: #4CAF50;
   /* Green */
   border: none;
   color: white;
