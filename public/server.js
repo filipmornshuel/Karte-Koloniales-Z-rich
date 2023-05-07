@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const express = require('express');
+const session = require('express-session');
 const path = require('path');
 const mime = require('mime-types');
 const { pathToFileURL } = require('url');
@@ -7,9 +8,19 @@ const app = express();
 const port = 3000;
 const nodemailer = require('nodemailer');
 var dotenv = require('dotenv').config({path: '../.env'});
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 app.use(express.static(__dirname));
 app.use(express.json());
+app.use(session({
+  secret: "augh",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+      maxAge: 600000,
+  }
+}));
 
 app.use((req, res, next) => {
   const mimeType = mime.lookup(pathToFileURL);
@@ -20,6 +31,78 @@ app.use((req, res, next) => {
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + 'index.html'));
+});
+
+function isAuthenticated(req, res, next) {
+  if (req.session.user) next()
+  else res.redirect('/login');
+}
+
+app.get('/admin', isAuthenticated, function(req, res) {
+ res.sendFile(path.join(__dirname + "/admin.html"));
+});
+
+app.get('/login', function (req, res) {
+  res.send('<form action="/loginProcess" method="post">' +
+    'Username: <input name="user"><br>' +
+    'Password: <input name="pass" type="password"><br>' +
+    '<input type="submit" text="Login"></form>')
+});
+
+app.post('/loginProcess', express.urlencoded({ extended: false }), function (req, res) {
+
+  const data = req.body;
+  var user = data.user;
+  bcrypt.hash(data.pass, saltRounds, function(err, hash) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(data);
+      db.all("SELECT * FROM users WHERE user=? AND pass=?", [user, hash],(err, rows) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send("Server Error");
+        } else {
+          if (rows.length == 1) {
+            req.session.regenerate(function (err) {
+              if (err) next(err)
+              req.session.user = req.body.user
+
+              req.session.save(function (err) {
+                if (err) return next(err)
+                res.redirect('/admin.html')
+              });
+            });
+          };
+        }
+      });
+    }
+  }
+);
+
+app.get('/logout', function (req, res, next) {
+
+  req.session.user = null
+  req.session.save(function (err) {
+    if (err) next(err)
+
+    req.session.regenerate(function (err) {
+      if (err) next(err)
+      res.redirect('/');
+    });
+  });
+});
+  
+req.session.regenerate(function (err) {
+  if (err) next(err)
+
+  req.session.user = req.body.user
+
+  req.session.save(function (err) {
+    if (err) return next(err)
+    res.redirect('/admin.html')
+  });
+});
 });
 
 //Get all histroy entries
