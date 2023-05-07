@@ -192,14 +192,14 @@ app.post('/api/sendProposal', (req, res) => {
 
 //Add Request to History
 app.post('/api/addHistory', (req, res) => {
-  const { name, lat, lng, description, img } = req.body;
+  const { name, lat, lng, description, img, audio } = req.body;
   console.log(name);
 
   // Insert new checkpoint into the 'history' table
   db.run(
-    `INSERT INTO history (name, lat, lng, description, img)
-          VALUES (?, ?, ?, ?, ?)`,
-    [name, lat, lng, description, img],
+    `INSERT INTO history (name, lat, lng, description, img, audio)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+    [name, lat, lng, description, img, audio],
     function (err) {
       if (err) {
         console.error(err.message);
@@ -208,7 +208,7 @@ app.post('/api/addHistory', (req, res) => {
         // Return the new checkpoint with its ID
         const newCheckpoint = {
           id: this.lastID,
-          title,
+          name,
           lat,
           lng,
           description,

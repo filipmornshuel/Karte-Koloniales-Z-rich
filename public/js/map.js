@@ -135,7 +135,7 @@ function saveCheckpointData() {
     frAudio.addEventListener('load', () => {
       let audioUrl = frAudio.result;
       addCheckpoint(coordinate, title, description, '', audioUrl.toString());
-      addHistoryEntry(coordinate, title, description, '',audioUrl.toString());
+      addHistoryEntry(coordinate, title, description, '', audioUrl.toString());
     });
   }
   closeForm();
@@ -182,7 +182,7 @@ function addCheckpoint(coordinate, title, description, blobImg, blobAudio) {
   }
 }
 
-function addHistoryEntry(coordinate, title, description, blobImg) {
+function addHistoryEntry(coordinate, title, description, blobImg, blobAudio) {
 
   if (title != null && title != '') {
 
