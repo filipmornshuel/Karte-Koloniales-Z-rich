@@ -1,18 +1,20 @@
 const sqlite3 = require('sqlite3').verbose();
 const express = require('express');
 const path = require('path');
-const multer = require('multer');
 const hcaptcha = require('hcaptcha');
 require('dotenv').config({ path: '../.env' });
 const HCAPTCHA_SECRET_KEY = process.env.SECRET_KEY;
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json({ limit: '25mb' }));
+//app.use(express.urlencoded({ extended: true }));
+//app.use(express.json({ limit: '25mb' }));
+//app.use(express.bodyParser({limit: '50mb'}));
+app.use(bodyParser.json({limit: '25mb'}))
+app.use(bodyParser.urlencoded({limit: '25mb', extended: true}))
 
 function verifyHCaptcha(req, res, next) {
   const { token } = req.body;

@@ -1,5 +1,6 @@
 body {font-family: Arial, Helvetica, sans-serif;}
 
+
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
@@ -11,25 +12,62 @@ body {font-family: Arial, Helvetica, sans-serif;}
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 /* Modal Content */
 .modal-content {
   background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  max-height: 90%;
+  max-width: 80%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  overflow-y: auto; /* Enable vertical scroll if needed */
+}
+
+/* Modal Title */
+.modal-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Modal Description */
+.modal-description {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Modal Image */
+.modal-content img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  margin-bottom: 10px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Modal Audio */
+.modal-audio {
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 /* The Close Button */
 .close {
   color: #aaaaaa;
-  float: right;
   font-size: 28px;
   font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 20px;
 }
 
 .close:hover,
@@ -38,3 +76,36 @@ body {font-family: Arial, Helvetica, sans-serif;}
   text-decoration: none;
   cursor: pointer;
 }
+
+/* Responsive layout - adjusts to smaller screens */
+@media (max-width: 768px) {
+  .modal-content {
+    max-height: none;
+    max-width: 90%;
+    padding: 10px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+  }
+
+  .modal-image {
+    max-height: 50vh;
+    margin-bottom: 5px;
+  }
+
+  .modal-description {
+    font-size: 14px;
+  }
+
+  .modal-audio {
+    margin-bottom: 5px;
+  }
+
+  .close {
+    font-size: 24px;
+    top: 5px;
+    right: 10px;
+  }
+}
+
